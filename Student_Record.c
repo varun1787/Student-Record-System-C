@@ -12,21 +12,28 @@ struct Student {
 struct Student *head = NULL;
 
 void addStudent() {
-    struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
-    
-    printf("\nEnter Roll Number: ");
-    scanf("%d", &newNode->roll);
-    
-    printf("Enter Name: ");
-    scanf(" %[^\n]", newNode->name);
-    
-    printf("Enter Marks: ");
-    scanf("%f", &newNode->marks);
-    
-    newNode->next = head;
-    head = newNode;
-    
-    printf("Student added successfully!\n");
+    int n, i;
+    printf("\nHow many students do you want to add? ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
+
+        printf("\n--- Student %d ---\n", i + 1);
+        printf("Enter Roll Number: ");
+        scanf("%d", &newNode->roll);
+
+        printf("Enter Name: ");
+        scanf(" %[^\n]", newNode->name);
+
+        printf("Enter Marks: ");
+        scanf("%f", &newNode->marks);
+
+        newNode->next = head;
+        head = newNode;
+
+        printf("Student %d added successfully!\n", i + 1);
+    }
 }
 
 void displayStudents() {
