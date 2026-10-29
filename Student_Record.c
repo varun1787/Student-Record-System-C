@@ -11,151 +11,46 @@ struct Student {
 
 struct Student *head = NULL;
 
-void addStudentRecord() {
-    int n, i;
-    printf("\nHow many students to add: ");
-    scanf("%d", &n);
-
-    for (i = 0; i < n; i++) {
-        struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
-        
-        printf("\nStudent %d\n", i + 1);
-        printf("Enter Roll: ");
-        scanf("%d", &newNode->roll);
-
-        printf("Enter Name: ");
-        scanf(" %[^\n]", newNode->name);
-
-        printf("Enter Percentage: ");
-        scanf("%f", &newNode->percentage);
-
-        newNode->next = head;
-        head = newNode;
-
-        printf("Added successfully!\n");
-    }
-}
-
-void showAllStudents() {
-    struct Student *temp = head;
-    if (temp == NULL) {
-        printf("\nNo records found!\n");
-        return;
-    }
-
-    printf("\n--- All Students ---\n");
-    while (temp != NULL) {
-        printf("Roll: %d | Name: %s | Percentage: %.2f\n", temp->roll, temp->name, temp->percentage);
-        temp = temp->next;
-    }
-}
-
-void modifyStudentRecord() {
-    char ch;
-    struct Student *temp = head;
-    struct Student *target = NULL;
-
-    if (head == NULL) {
-        printf("\nNo records to modify!\n");
-        return;
-    }
-
-    printf("\n[R] Search by Roll\n");
-    printf("[N] Search by Name\n");
-    printf("[B] Back to Menu\n");
-    printf("Enter choice: ");
-    scanf(" %c", &ch);
-
-    if (ch == 'R' || ch == 'r') {
-        int r;
-        printf("Enter Roll: ");
-        scanf("%d", &r);
+int get_smallest_roll() {
+    int r = 1;
+    while (1) {
+        int found = 0;
+        struct Student *temp = head;
         while (temp != NULL) {
             if (temp->roll == r) {
-                target = temp;
+                found = 1;
                 break;
             }
             temp = temp->next;
         }
-    } else if (ch == 'N' || ch == 'n') {
-        char sname[50];
-        int count = 0;
-        printf("Enter Name: ");
-        scanf(" %[^\n]", sname);
-
-        temp = head;
-        while (temp != NULL) {
-            if (strcmp(temp->name, sname) == 0) {
-                count++;
-            }
-            temp = temp->next;
+        if (found == 0) {
+            return r;
         }
-
-        if (count == 0) {
-            printf("Name not found!\n");
-            return;
-        } else if (count == 1) {
-            temp = head;
-            while (temp != NULL) {
-                if (strcmp(temp->name, sname) == 0) {
-                    target = temp;
-                    break;
-                }
-                temp = temp->next;
-            }
-        } else {
-            printf("\nMore than one student found with same name:\n");
-            temp = head;
-            while (temp != NULL) {
-                if (strcmp(temp->name, sname) == 0) {
-                    printf("Roll: %d | Name: %s\n", temp->roll, temp->name);
-                }
-                temp = temp->next;
-            }
-            int r;
-            printf("Confirm by Roll number: ");
-            scanf("%d", &r);
-            temp = head;
-            while (temp != NULL) {
-                if (temp->roll == r) {
-                    target = temp;
-                    break;
-                }
-                temp = temp->next;
-            }
-        }
-    } else if (ch == 'B' || ch == 'b') {
-        return;
-    } else {
-        printf("Invalid choice!\n");
-        return;
+        r++;
     }
-
-    if (target == NULL) {
-        printf("Student not found!\n");
-        return;
-    }
-
-    printf("Enter New Name: ");
-    scanf(" %[^\n]", target->name);
-    printf("Enter New Percentage: ");
-    scanf("%f", &target->percentage);
-    printf("Record modified!\n");
 }
 
-void deleteStudentRecord() {
-    int r;
-    char confirm;
+void stud_add() {
+    struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
+
+    newNode->roll = get_smallest_roll();
+    printf("\nAssigned Roll Number: %d\n", newNode->roll);
+
+    printf("Enter Student Name: ");
+    scanf(" %[^\n]", newNode->name);
+
+    printf("Enter Percentage: ");
+    scanf("%f", &newNode->percentage);
+
+    newNode->next = head;
+    head = newNode;
+
+    printf("Record added successfully!\n");
+}
+
+void delete_node(int r) {
     struct Student *temp = head;
     struct Student *prev = NULL;
-
-    if (head == NULL) {
-        printf("\nNo records to delete!\n");
-        return;
-    }
-
-    printf("\nEnter Roll to delete: ");
-    scanf("%d", &r);
 
     while (temp != NULL && temp->roll != r) {
         prev = temp;
@@ -163,15 +58,7 @@ void deleteStudentRecord() {
     }
 
     if (temp == NULL) {
-        printf("Roll number not found!\n");
-        return;
-    }
-
-    printf("Are you sure to delete %s? (y/n): ", temp->name);
-    scanf(" %c", &confirm);
-
-    if (confirm != 'y' && confirm != 'Y') {
-        printf("Deletion cancelled!\n");
+        printf("Roll number %d not found!\n", r);
         return;
     }
 
@@ -182,64 +69,191 @@ void deleteStudentRecord() {
     }
 
     free(temp);
-    printf("Deleted successfully!\n");
+    printf("Record deleted successfully!\n");
 }
 
-void sortStudentRecords() {
-    int count = 0, i, j, opt;
-    struct Student *temp = head;
-
-    while (temp != NULL) {
-        count++;
-        temp = temp->next;
-    }
-
-    if (count == 0) {
-        printf("\nNo records to sort!\n");
+void stud_del() {
+    char ch;
+    if (head == NULL) {
+        printf("\nNo records to delete!\n");
         return;
     }
 
-    struct Student arr[count];
-    temp = head;
-    for (i = 0; i < count; i++) {
-        arr[i] = *temp;
-        temp = temp->next;
+    printf("\nDelete Menu:\n");
+    printf("R/r : Delete using Roll Number\n");
+    printf("N/n : Delete using Name\n");
+    printf("Enter Your Choice: ");
+    scanf(" %c", &ch);
+
+    if (ch == 'R' || ch == 'r') {
+        int r;
+        printf("Enter Roll Number: ");
+        scanf("%d", &r);
+        delete_node(r);
+    } else if (ch == 'N' || ch == 'n') {
+        char name[50];
+        int count = 0;
+        printf("Enter Name: ");
+        scanf(" %[^\n]", name);
+
+        struct Student *temp = head;
+        printf("\nMatching Records:\n");
+        while (temp != NULL) {
+            if (strcmp(temp->name, name) == 0) {
+                printf("Roll: %d | Name: %s | Percentage: %.2f\n", temp->roll, temp->name, temp->percentage);
+                count++;
+            }
+            temp = temp->next;
+        }
+
+        if (count == 0) {
+            printf("No records found with name %s!\n", name);
+            return;
+        }
+
+        int r;
+        printf("Enter Roll Number to delete: ");
+        scanf("%d", &r);
+        delete_node(r);
+    } else {
+        printf("Invalid choice!\n");
+    }
+}
+
+void stud_show() {
+    struct Student *temp = head;
+
+    if (temp == NULL) {
+        printf("\nNo records to show!\n");
+        return;
     }
 
-    printf("\n1. Sort by Name\n");
-    printf("2. Sort by Percentage\n");
-    printf("Enter option: ");
-    scanf("%d", &opt);
+    printf("\nRoll No\tName\t\tPercentage\n");
+    printf("--------------------------------------\n");
+    while (temp != NULL) {
+        printf("%d\t%s\t\t%.2f\n", temp->roll, temp->name, temp->percentage);
+        temp = temp->next;
+    }
+}
 
-    for (i = 0; i < count - 1; i++) {
-        for (j = 0; j < count - i - 1; j++) {
-            if (opt == 1) {
-                if (strcmp(arr[j].name, arr[j + 1].name) > 0) {
-                    struct Student t = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = t;
+void stud_mod() {
+    char ch, field;
+    struct Student *temp = head;
+    struct Student *target = NULL;
+
+    if (head == NULL) {
+        printf("\nNo records to modify!\n");
+        return;
+    }
+
+    printf("\nStep 1: Search Record\n");
+    printf("R/r : Roll Number\n");
+    printf("N/n : Name\n");
+    printf("P/p : Percentage\n");
+    printf("Enter Your Choice: ");
+    scanf(" %c", &ch);
+
+    if (ch == 'R' || ch == 'r') {
+        int r;
+        printf("Enter Roll Number: ");
+        scanf("%d", &r);
+        while (temp != NULL) {
+            if (temp->roll == r) {
+                target = temp;
+                break;
+            }
+            temp = temp->next;
+        }
+    } else if (ch == 'N' || ch == 'n') {
+        char name[50];
+        int count = 0;
+        printf("Enter Name: ");
+        scanf(" %[^\n]", name);
+
+        temp = head;
+        printf("\nMatching Records:\n");
+        while (temp != NULL) {
+            if (strcmp(temp->name, name) == 0) {
+                printf("Roll: %d | Name: %s | Percentage: %.2f\n", temp->roll, temp->name, temp->percentage);
+                count++;
+            }
+            temp = temp->next;
+        }
+
+        if (count > 0) {
+            int r;
+            printf("Enter Roll Number to modify: ");
+            scanf("%d", &r);
+            temp = head;
+            while (temp != NULL) {
+                if (temp->roll == r) {
+                    target = temp;
+                    break;
                 }
-            } else if (opt == 2) {
-                if (arr[j].percentage < arr[j + 1].percentage) {
-                    struct Student t = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = t;
+                temp = temp->next;
+            }
+        }
+    } else if (ch == 'P' || ch == 'p') {
+        float p;
+        int count = 0;
+        printf("Enter Percentage: ");
+        scanf("%f", &p);
+
+        temp = head;
+        printf("\nMatching Records:\n");
+        while (temp != NULL) {
+            if (temp->percentage == p) {
+                printf("Roll: %d | Name: %s | Percentage: %.2f\n", temp->roll, temp->name, temp->percentage);
+                count++;
+            }
+            temp = temp->next;
+        }
+
+        if (count > 0) {
+            int r;
+            printf("Enter Roll Number to modify: ");
+            scanf("%d", &r);
+            temp = head;
+            while (temp != NULL) {
+                if (temp->roll == r) {
+                    target = temp;
+                    break;
                 }
+                temp = temp->next;
             }
         }
     }
 
-    printf("\n--- Sorted List ---\n");
-    for (i = 0; i < count; i++) {
-        printf("Roll: %d | Name: %s | Percentage: %.2f\n", arr[i].roll, arr[i].name, arr[i].percentage);
+    if (target == NULL) {
+        printf("Record not found!\n");
+        return;
+    }
+
+    printf("\nStep 2: Modify Field\n");
+    printf("N/n : Name\n");
+    printf("P/p : Percentage\n");
+    printf("Enter Your Choice: ");
+    scanf(" %c", &field);
+
+    if (field == 'N' || field == 'n') {
+        printf("Enter New Name: ");
+        scanf(" %[^\n]", target->name);
+        printf("Name modified successfully!\n");
+    } else if (field == 'P' || field == 'p') {
+        printf("Enter New Percentage: ");
+        scanf("%f", &target->percentage);
+        printf("Percentage modified successfully!\n");
+    } else {
+        printf("Invalid choice!\n");
     }
 }
 
-void saveRecords() {
-    FILE *fp = fopen("students.txt", "w");
+void stud_save() {
+    FILE *fp = fopen("student.dat", "w");
     struct Student *temp = head;
 
     if (fp == NULL) {
+        printf("Error opening file!\n");
         return;
     }
 
@@ -248,11 +262,11 @@ void saveRecords() {
         temp = temp->next;
     }
     fclose(fp);
-    printf("Records saved successfully!\n");
+    printf("Records saved to student.dat successfully!\n");
 }
 
-void loadRecords() {
-    FILE *fp = fopen("students.txt", "r");
+void load_records() {
+    FILE *fp = fopen("student.dat", "r");
     if (fp == NULL) {
         return;
     }
@@ -269,22 +283,68 @@ void loadRecords() {
     fclose(fp);
 }
 
-void exitProgram() {
+void stud_sort() {
+    char ch;
+    struct Student *i, *j;
+
+    if (head == NULL) {
+        printf("\nNo records to sort!\n");
+        return;
+    }
+
+    printf("\nSort Menu:\n");
+    printf("N/n : Sort by Name\n");
+    printf("P/p : Sort by Percentage\n");
+    printf("Enter Your Choice: ");
+    scanf(" %c", &ch);
+
+    for (i = head; i != NULL; i = i->next) {
+        for (j = i->next; j != NULL; j = j->next) {
+            int swap = 0;
+            if (ch == 'N' || ch == 'n') {
+                if (strcmp(i->name, j->name) > 0) {
+                    swap = 1;
+                }
+            } else if (ch == 'P' || ch == 'p') {
+                if (i->percentage < j->percentage) {
+                    swap = 1;
+                }
+            }
+
+            if (swap == 1) {
+                int tr = i->roll;
+                char tn[50];
+                float tp = i->percentage;
+                strcpy(tn, i->name);
+
+                i->roll = j->roll;
+                strcpy(i->name, j->name);
+                i->percentage = j->percentage;
+
+                j->roll = tr;
+                strcpy(j->name, tn);
+                j->percentage = tp;
+            }
+        }
+    }
+    printf("List sorted successfully!\n");
+    stud_show();
+}
+
+void exit_program() {
     char ch;
     while (1) {
-        printf("\n[S] Save & Exit\n");
-        printf("[E] Exit without Save\n");
-        printf("[B] Back to Menu\n");
-        printf("Enter choice: ");
+        printf("\nExit Submenu:\n");
+        printf("S/s : Save and Exit\n");
+        printf("E/e : Exit Without Saving\n");
+        printf("Enter Your Choice: ");
         scanf(" %c", &ch);
 
         if (ch == 'S' || ch == 's') {
-            saveRecords();
+            stud_save();
             exit(0);
         } else if (ch == 'E' || ch == 'e') {
             exit(0);
-        } else if (ch == 'B' || ch == 'b') {
-            return;
         } else {
             printf("Invalid choice!\n");
         }
@@ -293,52 +353,51 @@ void exitProgram() {
 
 int main() {
     char choice;
-    loadRecords();
+    load_records();
 
     while (1) {
-        printf("\n*** Student Record Management ***\n");
-        printf("[A] Add New Student Record\n");
-        printf("[D] Delete Student Record\n");
-        printf("[M] Modify Student Record\n");
-        printf("[S] Show All Student Records\n");
-        printf("[T] Sort Student Records\n");
-        printf("[V] Save Records\n");
-        printf("[E] Exit Program\n");
-        printf("Enter choice: ");
-
+        printf("\n**** STUDENT RECORD MENU ****\n");
+        printf("A/a : Add New Record\n");
+        printf("D/d : Delete a Record\n");
+        printf("S/s : Show the List\n");
+        printf("M/m : Modify a Record\n");
+        printf("V/v : Save\n");
+        printf("T/t : Sort the List\n");
+        printf("E/e : Exit\n");
+        printf("Enter Your Choice: ");
         scanf(" %c", &choice);
 
         switch (choice) {
             case 'A':
             case 'a':
-                addStudentRecord();
+                stud_add();
                 break;
             case 'D':
             case 'd':
-                deleteStudentRecord();
-                break;
-            case 'M':
-            case 'm':
-                modifyStudentRecord();
+                stud_del();
                 break;
             case 'S':
             case 's':
-                showAllStudents();
+                stud_show();
                 break;
-            case 'T':
-            case 't':
-                sortStudentRecords();
+            case 'M':
+            case 'm':
+                stud_mod();
                 break;
             case 'V':
             case 'v':
-                saveRecords();
+                stud_save();
+                break;
+            case 'T':
+            case 't':
+                stud_sort();
                 break;
             case 'E':
             case 'e':
-                exitProgram();
+                exit_program();
                 break;
             default:
-                printf("Invalid choice! Try again.\n");
+                printf("Invalid Choice!\n");
         }
     }
     return 0;
