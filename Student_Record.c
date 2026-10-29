@@ -31,21 +31,28 @@ int get_smallest_roll() {
 }
 
 void stud_add() {
-    struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
+    int n, i;
+    printf("\nHow many students to add: ");
+    scanf("%d", &n);
 
-    newNode->roll = get_smallest_roll();
-    printf("\nAssigned Roll Number: %d\n", newNode->roll);
+    for (i = 0; i < n; i++) {
+        struct Student *newNode = (struct Student *)malloc(sizeof(struct Student));
 
-    printf("Enter Student Name: ");
-    scanf(" %[^\n]", newNode->name);
+        newNode->roll = get_smallest_roll();
+        printf("\n--- Student %d ---\n", i + 1);
+        printf("Auto-assigned Roll Number: %d\n", newNode->roll);
 
-    printf("Enter Percentage: ");
-    scanf("%f", &newNode->percentage);
+        printf("Enter Student Name: ");
+        scanf(" %[^\n]", newNode->name);
 
-    newNode->next = head;
-    head = newNode;
+        printf("Enter Percentage: ");
+        scanf("%f", &newNode->percentage);
 
-    printf("Record added successfully!\n");
+        newNode->next = head;
+        head = newNode;
+
+        printf("Record added successfully!\n");
+    }
 }
 
 void delete_node(int r) {
